@@ -16,7 +16,7 @@ public:
         COM_INTERFACE_ENTRY(IQueueCallbackDeviceIoControl)
     END_COM_MAP()
 
-    static HRESULT CreateInstance(_In_ IWDFDevice* pWdfDevice, CMyDevice* pMyDevice);
+    static HRESULT CreateInstance(_In_ IWDFDevice *pWdfDevice, CMyDevice *pMyDevice);
 
 protected:
    CMyQueue();
@@ -26,16 +26,16 @@ public:
 
     // IQueueCallbackDeviceIoControl
     STDMETHOD_ (void, OnDeviceIoControl)(
-        _In_ IWDFIoQueue*    pQueue,
-        _In_ IWDFIoRequest*  pRequest,
-        _In_ ULONG           ControlCode,
-             SIZE_T          InputBufferSizeInBytes,
-             SIZE_T          OutputBufferSizeInBytes
+        _In_ IWDFIoQueue *pQueue,
+        _In_ IWDFIoRequest *pRequest,
+        _In_ ULONG ControlCode,
+             SIZE_T InputBufferSizeInBytes,
+             SIZE_T OutputBufferSizeInBytes
         );
 
 private:
     // Parent device object
-    CMyDevice*          m_pParentDevice;
+    CMyDevice *m_pParentDevice;
 };
 
 #endif // _QUEUE_H_
