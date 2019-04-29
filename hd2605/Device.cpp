@@ -61,7 +61,7 @@ HRESULT CMyDevice::CreateInstance(
 {
     FuncEntry();
 
-	L2(WFN, L"Called.");
+    L2(WFN, L"Called.");
 
     CComObject<CMyDevice>* pMyDevice = nullptr;
 
@@ -102,7 +102,7 @@ HRESULT CMyDevice::Initialize(
 {
     FuncEntry();
 
-	L2(WFN, L"Called.");
+    L2(WFN, L"Called.");
     
     CComPtr<IUnknown> spCallback;
     CComPtr<IWDFDevice> spIWDFDevice;
@@ -143,8 +143,7 @@ HRESULT CMyDevice::Initialize(
         WUDF_DEVICE_POWER_POLICY_IDLE_SETTINGS idleSettings;
         WUDF_DEVICE_POWER_POLICY_IDLE_SETTINGS_INIT(
             &idleSettings,
-            IdleCannotWakeFromS0
-            );
+            IdleCannotWakeFromS0);
 
         // Set delay timeout value. This specifies the time
         // delay between WDF detecting the device is idle
@@ -196,7 +195,7 @@ HRESULT CMyDevice::Configure()
 {
     FuncEntry();
 
-	L2(WFN, L"Called.");
+    L2(WFN, L"Called.");
 
     HRESULT hr = CMyQueue::CreateInstance(m_spWdfDevice, this);
 
@@ -503,7 +502,6 @@ HRESULT CMyDevice::ProcessIoControl(
 
 			break;
 		}
-		
 		case IOCTL_INTERFACE_1:
 		{
 			m_pHapticDevice->TestInterface1(1);
