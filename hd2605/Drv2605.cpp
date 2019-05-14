@@ -226,8 +226,8 @@ HRESULT CDrv2605::InitializeDeviceSequence()
 }
 
 HRESULT CDrv2605::ParseResources(
-	_In_ IWDFDevice *pWdfDevice,
-	_In_ IWDFCmResourceList *pWdfResourcesRaw,
+    _In_ IWDFDevice *pWdfDevice,
+    _In_ IWDFCmResourceList *pWdfResourcesRaw,
     _In_ IWDFCmResourceList *pWdfResourcesTranslated,
     _Out_ LARGE_INTEGER *pRequestId)
 {
@@ -463,13 +463,13 @@ HRESULT CDrv2605::ReadRegister(
             dataBufferLength,
             delayInUs);
 
-		if (SUCCEEDED(hr)) {
-			L2(WFN, L"CreateAndSendWriteReadSequence success.");
-		}
+        if (SUCCEEDED(hr)) {
+            L2(WFN, L"CreateAndSendWriteReadSequence success.");
+        }
 
-		if (FAILED(hr)) {
-			L2(WFN, L"CreateAndSendWriteReadSequence failed (%x).", hr);
-		}
+        if (FAILED(hr)) {
+            L2(WFN, L"CreateAndSendWriteReadSequence failed (%x).", hr);
+        }
     }
 
     if (FAILED(hr)) {
@@ -553,13 +553,13 @@ HRESULT CDrv2605::WriteRegister(
 
 HRESULT CDrv2605::TestInterface1(int libIndex)
 {
-	UNREFERENCED_PARAMETER(libIndex);
+    UNREFERENCED_PARAMETER(libIndex);
 
-	HRESULT hr = S_OK;
-	BYTE* pReadBuffer = new BYTE[1];
-	BYTE* pWriteBuffer = new BYTE[1];
+    HRESULT hr = S_OK;
+    BYTE* pReadBuffer = new BYTE[1];
+    BYTE* pWriteBuffer = new BYTE[1];
 
-	if (m_bInitialized == TRUE) {
+    if (m_bInitialized == TRUE) {
 #if 0
 		/*
 		I captured Haptic control command on I2C bus.
@@ -702,20 +702,20 @@ HRESULT CDrv2605::TestInterface1(int libIndex)
 			[Remove] 21. Set “register address 1D” to “Data A0” --> set control3
 		 */
 
-		pWriteBuffer[0] = 0x01;
-		hr = WriteRegister(DRV2605_REG_GO, pWriteBuffer, 1);
-	}
+        pWriteBuffer[0] = 0x01;
+        hr = WriteRegister(DRV2605_REG_GO, pWriteBuffer, 1);
+    }
 
-	//
-	// Delete the buffer allocations
-	//
-	if (pReadBuffer != nullptr) {
-		delete[] pReadBuffer;
-	}
+    //
+    // Delete the buffer allocations
+    //
+    if (pReadBuffer != nullptr) {
+        delete[] pReadBuffer;
+    }
 
-	if (pWriteBuffer != nullptr) {
-		delete[] pWriteBuffer;
-	}
+    if (pWriteBuffer != nullptr) {
+        delete[] pWriteBuffer;
+    }
 
-	return hr;
+    return hr;
 }
