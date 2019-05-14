@@ -183,28 +183,28 @@ HRESULT CDrv2605::InitializeDeviceSequence()
 		 */
 
         WriteDeviceData initSeq1[8] = {
-		    /* 09 */ { DRV2605_REG_RATED_VOLTAGE, 0x50 },
-		    /* 10 */ { DRV2605_REG_OVERDRIVE_CLAMP_VOLTAGE, 0x7F },
-		    /* 11 */ { DRV2605_REG_FEEDBACK_CTRL, 0xEF },
-		    /* 12 */ { DRV2605_REG_CTRL_1, 0x93 },
-		    /* 13 */ { DRV2605_REG_CTRL_2, 0xF5 },
-		    /* 14 */ { DRV2605_REG_CTRL_3, 0xA0 },
-		    /* 15 */ { DRV2605_REG_MODE, 0x07 },
-		    /* 16 */ { DRV2605_REG_GO, 0x01 },
-	    };
+            /* 09 */ { DRV2605_REG_RATED_VOLTAGE, 0x50 },
+            /* 10 */ { DRV2605_REG_OVERDRIVE_CLAMP_VOLTAGE, 0x7F },
+            /* 11 */ { DRV2605_REG_FEEDBACK_CTRL, 0xEF },
+            /* 12 */ { DRV2605_REG_CTRL_1, 0x93 },
+            /* 13 */ { DRV2605_REG_CTRL_2, 0xF5 },
+            /* 14 */ { DRV2605_REG_CTRL_3, 0xA0 },
+            /* 15 */ { DRV2605_REG_MODE, 0x07 },
+            /* 16 */ { DRV2605_REG_GO, 0x01 },
+        };
 
-	    for (int itr = 0; itr < 8; itr++) {
-		    pWriteBuffer[0] = initSeq1[itr].data;
-		    hr = WriteRegister(initSeq1[itr].reg, pWriteBuffer, 1);
-	    }
+        for (int itr = 0; itr < 8; itr++) {
+            pWriteBuffer[0] = initSeq1[itr].data;
+            hr = WriteRegister(initSeq1[itr].reg, pWriteBuffer, 1);
+        }
 
-	    Sleep(1000);
-
-	    WriteDeviceData initSeq2[4] = {
-		    /* 18 */ { DRV2605_REG_LIBRARY_SELECTION, 0x06 },
-		    /* 19 */ { DRV2605_REG_WAVEFORM_SEQUENCER_00, 0x17 },
-		    /* 20 */ { DRV2605_REG_WAVEFORM_SEQUENCER_01, 0x00 },
-		    /* 21 */ { DRV2605_REG_MODE, 0x00 },
+        Sleep(1000);
+        
+        WriteDeviceData initSeq2[4] = {
+            /* 18 */ { DRV2605_REG_LIBRARY_SELECTION, 0x06 },
+            /* 19 */ { DRV2605_REG_WAVEFORM_SEQUENCER_00, 0x17 },
+            /* 20 */ { DRV2605_REG_WAVEFORM_SEQUENCER_01, 0x00 },
+            /* 21 */ { DRV2605_REG_MODE, 0x00 },
         };
 
         for (int itr = 0; itr < 4; itr++) {
@@ -233,7 +233,7 @@ HRESULT CDrv2605::ParseResources(
 {
     FuncEntry();
 
-	UNREFERENCED_PARAMETER(pWdfDevice); // used in interrupt only
+    UNREFERENCED_PARAMETER(pWdfDevice); // used in interrupt only
 
     HRESULT hr = S_OK;
 
@@ -275,13 +275,11 @@ HRESULT CDrv2605::ParseResources(
                         (connectionType == CM_RESOURCE_CONNECTION_TYPE_SERIAL_I2C)) {
                         if (fRequestFound == FALSE) {
                             // Save the request id
-                            pRequestId->LowPart =
-                                pDescriptor->u.Connection.IdLowPart;
-                            pRequestId->HighPart =
-                                pDescriptor->u.Connection.IdHighPart;
+                            pRequestId->LowPart = pDescriptor->u.Connection.IdLowPart;
+                            pRequestId->HighPart = pDescriptor->u.Connection.IdHighPart;
 
-							L2(WFN, L"[%d] IdLowPart = 0x%x", i, pRequestId->LowPart);
-							L2(WFN, L"[%d] IdHighPart = 0x%x", i, pRequestId->HighPart);
+                            L2(WFN, L"[%d] IdLowPart = 0x%x", i, pRequestId->LowPart);
+                            L2(WFN, L"[%d] IdHighPart = 0x%x", i, pRequestId->HighPart);
 
                             fRequestFound = TRUE;
                         } else {
@@ -292,7 +290,7 @@ HRESULT CDrv2605::ParseResources(
 
                     break;
                 case CmResourceTypeInterrupt:
-					/*
+                    /*
                     if (fInterruptFound == FALSE) {
                         hr = ConnectInterrupt(
                             pWdfDevice,
@@ -307,7 +305,7 @@ HRESULT CDrv2605::ParseResources(
                             TRACE_LEVEL_WARNING,
                             "Duplicate interrupt resource found, ignoring");
                     }
-					*/
+                    */
 
                     break;
                 default:
@@ -382,7 +380,7 @@ HRESULT CDrv2605::InitializeRequest(_In_ IWDFDevice *pWdfDevice, _In_ LARGE_INTE
 
             // Initialize the request object
             if (SUCCEEDED(hr)) {
-				L2(WFN, L"RESOURCE_HUB_CREATE_PATH_FROM_ID success.");
+                L2(WFN, L"RESOURCE_HUB_CREATE_PATH_FROM_ID success.");
 
                 // NULL-terminate the buffer
                 DevicePathBuffer[RESOURCE_HUB_PATH_CHARS - 1] = L'\0';
@@ -391,7 +389,7 @@ HRESULT CDrv2605::InitializeRequest(_In_ IWDFDevice *pWdfDevice, _In_ LARGE_INTE
                     pWdfDevice,
                     DevicePathBuffer);
 
-				L2(WFN, L"DevicePathBuffer = %s", DevicePathBuffer);
+                L2(WFN, L"DevicePathBuffer = %s", DevicePathBuffer);
             }
         }
 
@@ -403,18 +401,18 @@ HRESULT CDrv2605::InitializeRequest(_In_ IWDFDevice *pWdfDevice, _In_ LARGE_INTE
                 hr = E_OUTOFMEMORY;
             }
 
-			/*
-			pWriteBuffer[0] = 0x00;
-			hr = WriteRegister(DRV2605_REG_MODE, pWriteBuffer, 1);
+            /*
+            pWriteBuffer[0] = 0x00;
+            hr = WriteRegister(DRV2605_REG_MODE, pWriteBuffer, 1);
 
-			if (SUCCEEDED(hr)) {
-				L2(WFN, L"Actual device should be active now.");
-			}
+            if (SUCCEEDED(hr)) {
+                L2(WFN, L"Actual device should be active now.");
+            }
 
-			if (FAILED(hr)) {
-				L2(WFN, L"Failed to activate device (%x).", hr);
-			}
-			*/
+            if (FAILED(hr)) {
+                L2(WFN, L"Failed to activate device (%x).", hr);
+            }
+            */
         }
     }
 
