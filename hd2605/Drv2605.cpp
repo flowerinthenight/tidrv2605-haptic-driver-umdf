@@ -14,9 +14,9 @@
 //
 /////////////////////////////////////////////////////////////////////////
 CDrv2605::CDrv2605() :
-	m_spRequest(nullptr),
+    m_spRequest(nullptr),
     m_pSpbRequest(nullptr),
-	m_pDataBuffer(nullptr),
+    m_pDataBuffer(nullptr),
     m_bInitialized(FALSE)
 {
 
@@ -33,83 +33,79 @@ CDrv2605::~CDrv2605()
 {
     SAFE_RELEASE(m_pSpbRequest);
 
-	if (m_pDataBuffer != nullptr) {
+    if (m_pDataBuffer != nullptr) {
         delete[] m_pDataBuffer;
         m_pDataBuffer = nullptr;
     }
 }
 
 VOID CDrv2605::Initialize(
-	_In_ IWDFDevice *pWdfDevice,
+    _In_ IWDFDevice *pWdfDevice,
     _In_ IWDFCmResourceList *pWdfResourcesRaw,
     _In_ IWDFCmResourceList *pWdfResourcesTranslated)
 {
-	FuncEntry();
+    FuncEntry();
+    
+    L2(WFN, L"Entry -->");
+    
+    HRESULT hr = S_OK;
+    LARGE_INTEGER requestId;
+    
+    requestId.QuadPart = 0;
 
-	L2(WFN, L"Entry -->");
-
-	HRESULT hr = S_OK;
-	LARGE_INTEGER requestId;
-
-	requestId.QuadPart = 0;
-
-	if (m_bInitialized == FALSE) {
-		// Create the request object
+    if (m_bInitialized == FALSE) {
+        // Create the request object
         hr = CComObject<CSpbRequest>::CreateInstance(&m_pSpbRequest);
         
         if (SUCCEEDED(hr)) {
             m_pSpbRequest->AddRef();
             hr = m_pSpbRequest->QueryInterface(IID_PPV_ARGS(&m_spRequest));
         }
-
+        
         // TODO: CoCreateInstance rather than calling
         //       CreateInstance on the class and querying
         //       the required interface.
-
+        
         //// Create the request object
         //hr = CoCreateInstance(
         //    __uuidof(SpbRequest), // CLSID_SpbRequest
         //    nullptr,
         //    CLSCTX_INPROC_SERVER,
         //    IID_PPV_ARGS(&m_spRequest));
-
-		if (SUCCEEDED(hr)) {
-			hr = ParseResources(
-				pWdfDevice,
-				pWdfResourcesRaw,
-				pWdfResourcesTranslated,
-				&requestId);
-		}
-
-		if (FAILED(hr)) {
-			L2(WFN, L"ParseResources failed (%x).", hr);
-		}
-
-		if (SUCCEEDED(hr)) {
+        
+        if (SUCCEEDED(hr)) {
+        	hr = ParseResources( pWdfDevice, pWdfResourcesRaw, pWdfResourcesTranslated, &requestId);
+        }
+        
+        if (FAILED(hr)) {
+        	L2(WFN, L"ParseResources failed (%x).", hr);
+        }
+        
+        if (SUCCEEDED(hr)) {
             // Create and initialize the request object
             hr = InitializeRequest(pWdfDevice, requestId);
         }
-
-		if (SUCCEEDED(hr)) {
-			L2(WFN, L"m_bInitialized = TRUE");
-			m_bInitialized = TRUE;
-		}
+        
+        if (SUCCEEDED(hr)) {
+        	L2(WFN, L"m_bInitialized = TRUE");
+        	m_bInitialized = TRUE;
+        }
     }
 
-	if (FAILED(InitializeDeviceSequence())) {
-		L2(WFN, L"InitializeDeviceSequence failed!");
-	}
+    if (FAILED(InitializeDeviceSequence())) {
+        L2(WFN, L"InitializeDeviceSequence failed!");
+    }
 
-	FuncExit();
+    FuncExit();
 }
 
 HRESULT CDrv2605::InitializeDeviceSequence()
 {
-	HRESULT hr = S_OK;
-	BYTE* pReadBuffer = new BYTE[1];
-	BYTE* pWriteBuffer = new BYTE[1];
+    HRESULT hr = S_OK;
+    BYTE* pReadBuffer = new BYTE[1];
+    BYTE* pWriteBuffer = new BYTE[1];
 
-	if (m_bInitialized == TRUE) {
+    if (m_bInitialized == TRUE) {
 #if 0
 		WriteDeviceData initSeq[16] = {
 			/* 01 */ { DRV2605_REG_MODE, 0x00 },
@@ -186,47 +182,47 @@ HRESULT CDrv2605::InitializeDeviceSequence()
 			[Remove] 21. Set “register address 1D” to “Data A0” --> set control3
 		 */
 
-		WriteDeviceData initSeq1[8] = {
-			/* 09 */ { DRV2605_REG_RATED_VOLTAGE, 0x50 },
-			/* 10 */ { DRV2605_REG_OVERDRIVE_CLAMP_VOLTAGE, 0x7F },
-			/* 11 */ { DRV2605_REG_FEEDBACK_CTRL, 0xEF },
-			/* 12 */ { DRV2605_REG_CTRL_1, 0x93 },
-			/* 13 */ { DRV2605_REG_CTRL_2, 0xF5 },
-			/* 14 */ { DRV2605_REG_CTRL_3, 0xA0 },
-			/* 15 */ { DRV2605_REG_MODE, 0x07 },
-			/* 16 */ { DRV2605_REG_GO, 0x01 },
-		};
+        WriteDeviceData initSeq1[8] = {
+		    /* 09 */ { DRV2605_REG_RATED_VOLTAGE, 0x50 },
+		    /* 10 */ { DRV2605_REG_OVERDRIVE_CLAMP_VOLTAGE, 0x7F },
+		    /* 11 */ { DRV2605_REG_FEEDBACK_CTRL, 0xEF },
+		    /* 12 */ { DRV2605_REG_CTRL_1, 0x93 },
+		    /* 13 */ { DRV2605_REG_CTRL_2, 0xF5 },
+		    /* 14 */ { DRV2605_REG_CTRL_3, 0xA0 },
+		    /* 15 */ { DRV2605_REG_MODE, 0x07 },
+		    /* 16 */ { DRV2605_REG_GO, 0x01 },
+	    };
 
-		for (int itr = 0; itr < 8; itr++) {
-			pWriteBuffer[0] = initSeq1[itr].data;
-			hr = WriteRegister(initSeq1[itr].reg, pWriteBuffer, 1);
-		}
+	    for (int itr = 0; itr < 8; itr++) {
+		    pWriteBuffer[0] = initSeq1[itr].data;
+		    hr = WriteRegister(initSeq1[itr].reg, pWriteBuffer, 1);
+	    }
 
-		Sleep(1000);
+	    Sleep(1000);
 
-		WriteDeviceData initSeq2[4] = {
-			/* 18 */ { DRV2605_REG_LIBRARY_SELECTION, 0x06 },
-			/* 19 */ { DRV2605_REG_WAVEFORM_SEQUENCER_00, 0x17 },
-			/* 20 */ { DRV2605_REG_WAVEFORM_SEQUENCER_01, 0x00 },
-			/* 21 */ { DRV2605_REG_MODE, 0x00 },
-		};
+	    WriteDeviceData initSeq2[4] = {
+		    /* 18 */ { DRV2605_REG_LIBRARY_SELECTION, 0x06 },
+		    /* 19 */ { DRV2605_REG_WAVEFORM_SEQUENCER_00, 0x17 },
+		    /* 20 */ { DRV2605_REG_WAVEFORM_SEQUENCER_01, 0x00 },
+		    /* 21 */ { DRV2605_REG_MODE, 0x00 },
+        };
 
-		for (int itr = 0; itr < 4; itr++) {
-			pWriteBuffer[0] = initSeq2[itr].data;
-			hr = WriteRegister(initSeq2[itr].reg, pWriteBuffer, 1);
-		}
-	}
+        for (int itr = 0; itr < 4; itr++) {
+            pWriteBuffer[0] = initSeq2[itr].data;
+            hr = WriteRegister(initSeq2[itr].reg, pWriteBuffer, 1);
+        }
+    }
 
-	// Delete the buffer allocations
-	if (pReadBuffer != nullptr) {
-		delete[] pReadBuffer;
-	}
+    // Delete the buffer allocations
+    if (pReadBuffer != nullptr) {
+        delete[] pReadBuffer;
+    }
 
-	if (pWriteBuffer != nullptr) {
-		delete[] pWriteBuffer;
-	}
+    if (pWriteBuffer != nullptr) {
+        delete[] pWriteBuffer;
+    }
 
-	return hr;
+    return hr;
 }
 
 HRESULT CDrv2605::ParseResources(
